@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: __PROJECT_SLUG__-db
+    volumes:
+      - __PROJECT_SLUG___pgdata:/var/lib/postgresql
+    ports:
+      - '127.0.0.1:${LOCAL_DB_PORT:-5432}:5432'
+    env_file:
+      - .env
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - dev
+      - prod
+    networks:
+      - __PROJECT_SLUG___network
+
+  dev:
+    build:
+      context: .
+      target: development
+    container_name: __PROJECT_SLUG__-dev
+    image: __PROJECT_SLUG__-dev:${TAG:-latest}
+    ports:
+      - '127.0.0.1:${LOCAL_APP_PORT:-3000}:3000'
+    volumes:
+      - ./:/app
+      - __PROJECT_SLUG___node_modules:/app/node_modules
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true # Enables polling for file changes (potentially more reliable for macOS host-mounted volumes)
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # TODO: Eventually add migration + seed command here too
+    command: sh -c "npm run dev"
+    profiles:
+      - dev
+    networks:
+      - __PROJECT_SLUG___network
+
+  prod:
+    build:
+      context: .
+      target: production
+    container_name: __PROJECT_SLUG__-prod
+    image: __PROJECT_SLUG__-prod:${TAG:-latest}
+    ports:
+      - '127.0.0.1:${LOCAL_APP_PORT:-3000}:3000'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - prod
+    networks:
+      - __PROJECT_SLUG___network
+
+volumes:
+  __PROJECT_SLUG___node_modules:
+  __PROJECT_SLUG___pgdata:
+
+networks:
+  __PROJECT_SLUG___network:

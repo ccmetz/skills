@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+*.test.ts
+*.test.tsx
+__tests__/
+vitest-setup.ts
+vitest.setup.ts
+vitest.config.mts
+
+# Next.js build output
+/.next/
+/out/
+.next
+
+# Production build
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Supply environment files at runtime instead of copying them into the image.
+.env*
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Plans and documentation
+plans/
+*.md
+!README.md
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
